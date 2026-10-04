@@ -1,0 +1,48 @@
+{
+  "seed": 17,
+  "candidate_counts": [
+    2,
+    3,
+    4,
+    6,
+    8
+  ],
+  "split_fractions": {
+    "train": 0.75,
+    "dev": 0.1,
+    "calibration": 0.05,
+    "test_locked": 0.1
+  },
+  "diagnostic_per_domain": 24,
+  "tokenizer_checksums": {
+    "tokenizer_config.json": "3c04ed3ca964ea2f6b2b5faf0dc4d31aec1cb1e8b4bcf63f402d295046b422b5",
+    "config.json": "1bb33a92c3548fbc68b889b490e810440435253598835bd71dff0396060c12db",
+    "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+    "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+    "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "dataset_name": "octo-chess-v2",
+  "sources": {
+    "lichess": {
+      "repo": "Lichess/chess-puzzles",
+      "revision": "5dc959d3f4e3413d1fe5b19a09ba6e595c5ed5c1",
+      "license": "cc0-1.0",
+      "files": {
+        "train-00000-of-00003.parquet": {
+          "path": "artifacts/sources/lichess/train-00000-of-00003.parquet",
+          "url": "https://huggingface.co/datasets/Lichess/chess-puzzles/resolve/5dc959d3f4e3413d1fe5b19a09ba6e595c5ed5c1/data/train-00000-of-00003.parquet",
+          "sha256": "a759851c458c5234948c529e7e6995f483a4fd5695c40313714444ac15cd44f4",
+          "bytes": 292245200
+        },
+        "README.md": {
+          "path": "artifacts/sources/lichess/README.md",
+          "url": "https://huggingface.co/datasets/Lichess/chess-puzzles/resolve/5dc959d3f4e3413d1fe5b19a09ba6e595c5ed5c1/README.md",
+          "sha256": "f1d4065d6132f2308449f06eb41360650157bb6350138b78452400dbfd1de029",
+          "bytes": 4428
+        }
+      }
+    }
+  },
+  "chess_positions": 10000,
+  "chess_scan_limit": 150000
+}

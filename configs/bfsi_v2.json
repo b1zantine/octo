@@ -1,0 +1,111 @@
+{
+  "seed": 17,
+  "candidate_counts": [
+    2,
+    3,
+    4,
+    6,
+    8
+  ],
+  "split_fractions": {
+    "train": 0.75,
+    "dev": 0.1,
+    "calibration": 0.05,
+    "test_locked": 0.1
+  },
+  "diagnostic_per_domain": 24,
+  "tokenizer_checksums": {
+    "tokenizer_config.json": "3c04ed3ca964ea2f6b2b5faf0dc4d31aec1cb1e8b4bcf63f402d295046b422b5",
+    "config.json": "1bb33a92c3548fbc68b889b490e810440435253598835bd71dff0396060c12db",
+    "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+    "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+    "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "dataset_name": "octo-bfsi-v2",
+  "sources": {
+    "bitext-banking": {
+      "repo": "bitext/Bitext-retail-banking-llm-chatbot-training-dataset",
+      "revision": "3e3621092fc6baaf7f53ceb6f091c60ae99acb67",
+      "license": "cdla-sharing-1.0",
+      "files": {
+        "bitext-retail-banking-llm-chatbot-training-dataset.parquet": {
+          "path": "artifacts/sources/bitext-banking/bitext-retail-banking-llm-chatbot-training-dataset.parquet",
+          "url": "https://huggingface.co/datasets/bitext/Bitext-retail-banking-llm-chatbot-training-dataset/resolve/3e3621092fc6baaf7f53ceb6f091c60ae99acb67/bitext-retail-banking-llm-chatbot-training-dataset.parquet",
+          "sha256": "93916f0b711925c7fe9615a4ea45b4f894e70f52856545483a27f9716f3df6d3",
+          "bytes": 7871042
+        },
+        "README.md": {
+          "path": "artifacts/sources/bitext-banking/README.md",
+          "url": "https://huggingface.co/datasets/bitext/Bitext-retail-banking-llm-chatbot-training-dataset/resolve/3e3621092fc6baaf7f53ceb6f091c60ae99acb67/README.md",
+          "sha256": "84dd7bc2296a64800457c08b34bd3744a8df594534a4778aa735a2fe692db424",
+          "bytes": 11686
+        }
+      }
+    },
+    "bitext-insurance": {
+      "repo": "bitext/Bitext-insurance-llm-chatbot-training-dataset",
+      "revision": "3ce42aaa134857c47c7ee6ad821be1d1fcf5a75b",
+      "license": "cdla-sharing-1.0",
+      "files": {
+        "bitext-insurance-llm-chatbot-training-dataset.csv": {
+          "path": "artifacts/sources/bitext-insurance/bitext-insurance-llm-chatbot-training-dataset.csv",
+          "url": "https://huggingface.co/datasets/bitext/Bitext-insurance-llm-chatbot-training-dataset/resolve/3ce42aaa134857c47c7ee6ad821be1d1fcf5a75b/bitext-insurance-llm-chatbot-training-dataset.csv",
+          "sha256": "bab50241ddc3c4680757d791a0e64b3613d3443367d56e6c19f3ecdd063e6130",
+          "bytes": 27245829
+        },
+        "README.md": {
+          "path": "artifacts/sources/bitext-insurance/README.md",
+          "url": "https://huggingface.co/datasets/bitext/Bitext-insurance-llm-chatbot-training-dataset/resolve/3ce42aaa134857c47c7ee6ad821be1d1fcf5a75b/README.md",
+          "sha256": "782689c4107aec48f61ea3345afa424cb574419eb63619cbaeabf03384edc306",
+          "bytes": 9518
+        }
+      }
+    },
+    "bitext-wealth": {
+      "repo": "bitext/Bitext-wealth-management-llm-chatbot-training-dataset",
+      "revision": "304f5dbc6f960152e5b5523d67d5c2ad9f5d264c",
+      "license": "cdla-sharing-1.0",
+      "files": {
+        "bitext-wealth-management-llm-chatbot-training-dataset.csv": {
+          "path": "artifacts/sources/bitext-wealth/bitext-wealth-management-llm-chatbot-training-dataset.csv",
+          "url": "https://huggingface.co/datasets/bitext/Bitext-wealth-management-llm-chatbot-training-dataset/resolve/304f5dbc6f960152e5b5523d67d5c2ad9f5d264c/bitext-wealth-management-llm-chatbot-training-dataset.csv",
+          "sha256": "9f71b71866d3cb76cabbafceaa3222f81b75523ebf136981f89e2b070f5abbda",
+          "bytes": 25851060
+        },
+        "README.md": {
+          "path": "artifacts/sources/bitext-wealth/README.md",
+          "url": "https://huggingface.co/datasets/bitext/Bitext-wealth-management-llm-chatbot-training-dataset/resolve/304f5dbc6f960152e5b5523d67d5c2ad9f5d264c/README.md",
+          "sha256": "2e741c251309d97cb9d7b45f0ed4e3aab38f6c731e7589cfdc13e86250bca3b5",
+          "bytes": 9813
+        }
+      }
+    },
+    "banking77": {
+      "repo": "legacy-datasets/banking77",
+      "revision": "54c053c5487708560dc60df4670185a2a4b27cd3",
+      "canonical_repo": "PolyAI/banking77",
+      "card_revision": "90d4e2ee5521c04fc1488f065b8b083658768c57",
+      "license": "cc-by-4.0",
+      "files": {
+        "train.parquet": {
+          "path": "artifacts/sources/banking77/train.parquet",
+          "url": "https://huggingface.co/datasets/legacy-datasets/banking77/resolve/54c053c5487708560dc60df4670185a2a4b27cd3/default/train/0000.parquet",
+          "sha256": "3c648a31689f4ab3acbd4f4f4d120944bb521cf6ba57da77aa87c57e8979be81",
+          "bytes": 298170
+        },
+        "test.parquet": {
+          "path": "artifacts/sources/banking77/test.parquet",
+          "url": "https://huggingface.co/datasets/legacy-datasets/banking77/resolve/54c053c5487708560dc60df4670185a2a4b27cd3/default/test/0000.parquet",
+          "sha256": "318da70fb77a0e01bcfaecc97ef6e3645313aab98c429f0f0630c9d48e703ecc",
+          "bytes": 93870
+        },
+        "README.md": {
+          "path": "artifacts/sources/banking77/README.md",
+          "url": "https://huggingface.co/datasets/PolyAI/banking77/resolve/90d4e2ee5521c04fc1488f065b8b083658768c57/README.md",
+          "sha256": "b494ae99274ad98adfedfefcb504469197a8732f9726f678320f4aaafc5502bf",
+          "bytes": 9779
+        }
+      }
+    }
+  }
+}

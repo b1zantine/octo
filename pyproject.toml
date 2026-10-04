@@ -1,0 +1,31 @@
+[project]
+name = "octo"
+version = "0.1.0"
+description = "Option-isolated pointer decisions with Choice, Score, and Noul"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "datasketch>=1.6,<2",
+    "matplotlib>=3.11.2",
+    "peft>=0.21.2",
+    "pyarrow>=20,<24",
+    "python-chess>=1.999",
+    "torch>=2.14.1",
+    "transformers>=5.18.0",
+    "wandb>=0.30.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+octo-train = "octo.cli:main"
+
+[project.optional-dependencies]
+tracking-fallback = [
+    "mlflow-skinny>=3,<4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/octo"]

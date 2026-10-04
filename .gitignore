@@ -218,3 +218,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Octo local training artifacts and telemetry
+outputs/
+wandb/
+
+# Versioned datasets, source snapshots, models, and local tracking stores
+artifacts/
+
+# Local experiments
+/experiments/

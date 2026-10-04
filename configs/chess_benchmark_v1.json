@@ -1,0 +1,18 @@
+{
+  "benchmark_name": "octo-chess-benchmark-v1",
+  "dataset_dir": "artifacts/datasets/chess-v2",
+  "domains": [
+    "chess"
+  ],
+  "seed": 20261004,
+  "core_per_domain": 200,
+  "dev_per_domain": 40,
+  "qwen_model": "Qwen/Qwen3-1.7B-Base",
+  "qwen_revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "qwen_max_new_tokens": 8,
+  "jev_model": "jev-1.13.0",
+  "jev_endpoint": "https://api.typesafe.ai/v1/systemone",
+  "request_timeout_seconds": 60,
+  "max_api_attempts": 3,
+  "bootstrap_samples": 1000
+}
