@@ -1,0 +1,7 @@
+Copyright 2026 Jared Palmer
+
+The files in this directory are licensed under the Apache License, Version 2.0.
+Modified files carry a notice describing their changes.
+
+package.json and package-lock.json were modified for the Octo package name,
+license metadata, and Webpack development/build commands.

@@ -21,8 +21,13 @@ build-backend = "hatchling.build"
 
 [project.scripts]
 octo-train = "octo.cli:main"
+octo-serve = "octo.serve:main"
 
 [project.optional-dependencies]
+serve = [
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.30,<1",
+]
 tracking-fallback = [
     "mlflow-skinny>=3,<4",
 ]

@@ -211,6 +211,8 @@ def run(args):
         training=ck.get('metadata',{})
         known={manifest['training_file_sha256'],manifest.get('historical_training_file_sha256')}
         used={training.get('train_sha256')}|set(training.get('train_file_sha256',{}).values())
+        used.update(value for name,value in training.get('dataset_sha256',{}).items()
+                    if name.endswith('/train'))
         if not (used-{None}) & (known-{None}):
             raise ValueError('checkpoint training lineage does not match this corpus')
         identity['checkpoint_files']={str(p.relative_to(checkpoint)):digest(p) for p in sorted(checkpoint.rglob('*')) if p.is_file()}

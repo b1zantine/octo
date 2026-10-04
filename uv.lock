@@ -1428,6 +1428,10 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+serve = [
+    { name = "fastapi" },
+    { name = "uvicorn" },
+]
 tracking-fallback = [
     { name = "mlflow-skinny" },
 ]
@@ -1435,6 +1439,7 @@ tracking-fallback = [
 [package.metadata]
 requires-dist = [
     { name = "datasketch", specifier = ">=1.6,<2" },
+    { name = "fastapi", marker = "extra == 'serve'", specifier = ">=0.115,<1" },
     { name = "matplotlib", specifier = ">=3.11.2" },
     { name = "mlflow-skinny", marker = "extra == 'tracking-fallback'", specifier = ">=3,<4" },
     { name = "peft", specifier = ">=0.21.2" },
@@ -1442,9 +1447,10 @@ requires-dist = [
     { name = "python-chess", specifier = ">=1.999" },
     { name = "torch", specifier = ">=2.14.1" },
     { name = "transformers", specifier = ">=5.18.0" },
+    { name = "uvicorn", marker = "extra == 'serve'", specifier = ">=0.30,<1" },
     { name = "wandb", specifier = ">=0.30.0" },
 ]
-provides-extras = ["tracking-fallback"]
+provides-extras = ["serve", "tracking-fallback"]
 
 [[package]]
 name = "opentelemetry-api"

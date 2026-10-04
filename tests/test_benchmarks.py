@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from octo.benchmark_data import neutralize,records,sample
-from octo.benchmark import (JevAdapter,FatalAPIError,jev_payload,prompt_for,score,validate_result,source_group_ci,compare,prediction_manifest)
+from octo.benchmark import (JevAdapter,FatalAPIError,jev_payload,prompt_for,score,validate_result,source_group_ci,compare,prediction_manifest,run)
 from octo.dataset import digest,write_json
 
 
@@ -19,6 +19,23 @@ def example():
 
 
 class BenchmarkTests(unittest.TestCase):
+    def test_colab_checkpoint_lineage_accepts_training_hash_only(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            checkpoint=Path(temporary)
+            args=Namespace(benchmark='artifacts/benchmarks/bfsi-v1',suite='core',
+                output='artifacts/evaluations/lineage-test',adapter='octo',device='mps',
+                checkpoint=str(checkpoint),resume=False)
+            manifest={'training_file_sha256':'train-hash'}
+            for key,accepted in [('bfsi/train',True),('bfsi/dev',False)]:
+                write_json(checkpoint/'octo.json',{'metadata':{'dataset_sha256':{key:'train-hash'}}})
+                with patch('octo.benchmark.verify_bundle',return_value=(manifest,{})),\
+                     patch('octo.benchmark.digest',return_value='hash'),\
+                     patch('octo.benchmark.write_json',side_effect=RuntimeError('lineage accepted')),\
+                     patch('pathlib.Path.mkdir'):
+                    with self.assertRaisesRegex(RuntimeError if accepted else ValueError,
+                        'lineage accepted' if accepted else 'lineage does not match'):
+                        run(args)
+
     def test_gold_and_semantic_ids_never_enter_any_adapter_input(self):
         request,gold=neutralize(example())
         self.assertEqual(gold['label_id'],'A')

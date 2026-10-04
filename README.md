@@ -2,7 +2,7 @@
 
 Octo implements the [v1 pointer-model design](docs/octo_v1_design.md): independently encoded text candidates, a shared decision representation, and one learned pointer head. It returns decisions and distributions without generating answer tokens.
 
-The implementation supports Choice, Score, and Noul, hard and soft targets, equal record weighting, LoRA training, typed outputs, and prediction checkpoints. Tiny CPU tests validate the architecture; this repository does not yet contain a semantically trained or calibrated pretrained checkpoint.
+The implementation supports Choice, Score, and Noul, hard and soft targets, equal record weighting, LoRA training, typed outputs, and prediction checkpoints. Tiny CPU tests validate the architecture. The playground can load the downloaded Colab-trained checkpoint described below.
 
 ## Install and check
 
@@ -90,3 +90,46 @@ The [BANKING77 Choice pilot](docs/octo_dataset.md) is built under `artifacts/dat
 The expanded [BFSI and chess corpus](docs/octo_bfsi_chess_dataset.md) contains all BANKING77 intents plus retail banking, insurance, wealth management, and Lichess tactical chess positions. BFSI and chess use separate configuration files and folders. Build each with `uv run python -m octo.mixture --domain bfsi --fetch` or `--domain chess --fetch`. Use `octo.chess_task.make_chess_request` to turn a FEN, side to move, and caller-provided legal moves into a Choice request.
 
 The [post-training benchmarking guide](docs/octo_benchmarks.md) provides separate frozen BFSI/chess suites and adapters for the pinned prompted Qwen3 baseline, Jev, and trained Octo. Benchmark answers are separated from inference inputs.
+
+## Playground and chess
+
+The playground at `/` lets you enter text or JSON state, ask Choice, Score, and Noul
+(yes/no probability) questions, inspect answer distributions, compare packed and
+separate requests, and test sensitivity to option order. The chess page at `/chess`
+supports model self-play and playing either color against the model, with move
+probabilities, position scores, sampling, and games saved in your browser.
+
+Start the API from the repository root:
+
+```bash
+uv sync --extra serve
+uv run --extra serve octo-serve
+```
+
+The default is the downloaded best Colab checkpoint selected by
+`artifacts/runs/octo_v1_colab_1/best_checkpoint.json` (epoch 3, step 14,877).
+Original Colab `/content` paths are resolved to this checkout. Override with
+`--checkpoint /path/to/checkpoint`; choose `--device mps` or `--device cuda` for
+acceleration. Base weights must be cached; `--allow-download` permits fetching
+the pinned base revision when needed.
+
+In a second terminal:
+
+```bash
+cd playground
+npm ci
+npm run dev
+```
+
+Open [the playground](http://localhost:3000) or [chess](http://localhost:3000/chess).
+The frontend proxies to `http://127.0.0.1:8009`; set `OCTO_API` when starting Next.js
+to use a different API address. For a production build, use `npm run build` then
+`npm start`.
+
+The server uses expanded inference limits (32 questions, 255 Choice candidates,
+8,192 tokens, 256 MiB mask budget) without changing the saved checkpoint or
+training limits. Requests exceeding these budgets are rejected. Chess presents
+every legal move as a candidate and runs a position Score question alongside it;
+a single forced legal move is played directly. These larger candidate sets,
+packed questions, and chess position scores extend beyond the checkpoint's
+training contract, so gameplay quality and position scores are experimental.

@@ -8,6 +8,7 @@ import random
 import signal
 import sys
 import time
+import traceback
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
@@ -101,17 +102,21 @@ def main():
     run=wandb.init(entity=config['wandb_entity'],project=config['wandb_project'],name=config['run_name'],
                    id=previous.get('id'),resume='allow',config=config,dir=str(output),
                    settings=wandb.Settings(disable_git=True,save_code=False))
+    run.config.update(config,allow_val_change=True)
+    cloud_step=max(run.step,config.get('wandb_last_logged_step',-1)+1)
     write(identity_path,{'id':run.id,'url':run.url})
     for reference in config['dataset_artifacts']:
         run.use_artifact(reference,type='dataset')
     queued=[]
     def _publish_checkpoint(path,aliases=None,initial=False):
-        aliases=aliases or [f'step-{step}']
+        saved_metadata=json.loads((path/'octo.json').read_text())['metadata']
+        saved_step=saved_metadata['step'];saved_epoch=saved_metadata['epoch']
+        aliases=aliases or [f'step-{saved_step}',f'epoch-{saved_epoch}']
         full=wandb.Artifact(config['run_name']+'-training-checkpoint',type='training-checkpoint',
-                            metadata={'step':step,'epoch':epoch+1,'base_revision':config['base_revision']})
+                            metadata={'step':saved_step,'epoch':saved_epoch,'base_revision':config['base_revision']})
         full.add_dir(str(path));uploaded=run.log_artifact(full,aliases=aliases)
         model_artifact=wandb.Artifact(config['run_name']+'-model',type='model',
-                                     metadata={'step':step,'epoch':epoch+1,'base_revision':config['base_revision']})
+                                     metadata={'step':saved_step,'epoch':saved_epoch,'base_revision':config['base_revision']})
         for file in path.rglob('*'):
             if file.is_file() and file.name not in ('training_state.pt','file_checksums.json'):
                 model_artifact.add_file(str(file),name=str(file.relative_to(path)))
@@ -133,7 +138,7 @@ def main():
         previous=list(pending);pending.clear()
         for path,aliases in previous:publish_checkpoint(Path(path),aliases)
         write(output/'pending_uploads.json',{'checkpoints':pending})
-    def checkpoint(label=''):
+    def checkpoint(label='',cloud=False):
         path=output/'checkpoints'/f'step-{step:08d}{label}'
         if not path.exists():
             staging=path.with_name(path.name+'.saving')
@@ -143,7 +148,7 @@ def main():
                         'python_rng':random.getstate(),'torch_rng':torch.get_rng_state(),'cuda_rng':torch.cuda.get_rng_state_all()},staging/'training_state.pt')
             write(staging/'file_checksums.json',{str(p.relative_to(staging)):digest(p) for p in staging.rglob('*') if p.is_file()})
             staging.rename(path)
-            publish_checkpoint(path,initial=step==0)
+        if cloud:publish_checkpoint(path)
         write(latest,{'path':str(path),'step':step,'epoch':epoch+1})
         return path
     best_path=output/'best_checkpoint.json'
@@ -157,16 +162,17 @@ def main():
                 while cursor<len(order):
                     if expired():raise InterruptedError('training runtime limit or stop requested')
                     before=time.monotonic()
+                    torch.cuda.reset_peak_memory_stats()
                     loss=train_step(model,encoder.batch([records[i] for i in order[cursor]]).to('cuda'),optimizer,config['gradient_clip_norm'])
                     cursor+=1;step+=1
                     metrics={'step':step,'epoch':epoch+1,'train/loss':loss,'train/step_seconds':time.monotonic()-before,
-                             'train/records':len(order[cursor-1]),'lr/adapter':config['adapter_lr'],'lr/pointer':config['pointer_lr']}
+                             'train/records':len(order[cursor-1]),'gpu/peak_allocated_gib':torch.cuda.max_memory_allocated()/2**30,'gpu/peak_reserved_gib':torch.cuda.max_memory_reserved()/2**30,'lr/adapter':config['adapter_lr'],'lr/pointer':config['pointer_lr']}
                     log.write(json.dumps(metrics)+'\n');log.flush()
-                    run.log({k:v for k,v in metrics.items() if k!='step'},step=step)
+                    if step>=cloud_step:run.log({k:v for k,v in metrics.items() if k!='step'},step=step)
                     if step%10==0:status('training',step=step,epoch=epoch+1,total_steps=len(order)*config['epochs'],loss=loss)
                     if step%config['checkpoint_every_steps']==0:
                         retry_uploads();checkpoint()
-                saved=checkpoint(f'-epoch-{epoch+1}')
+                saved=checkpoint(f'-epoch-{epoch+1}',cloud=True)
                 status('development_evaluation',step=step,epoch=epoch+1)
                 def batches():
                     for offset in range(0,len(dev),config['batch_size']):
@@ -183,17 +189,17 @@ def main():
                 if epoch<config['epochs']:order=batch_order(lengths,config['batch_size']);cursor=0
         if phase!='early_stopped':phase='complete'
         write(output/'final_checkpoint.json',{'path':str(saved),'step':step,'best':best})
-        publish_checkpoint(saved,aliases=['final',f'epoch-{min(epoch,config["epochs"])}'])
         publish_checkpoint(Path(best['path']),aliases=['best'])
+        publish_checkpoint(saved,aliases=['final'])
         results=wandb.Artifact(config['run_name']+'-evaluation',type='evaluation')
         results.add_file(str(output/'development_metrics.json'));results.add_file(str(output/'training_config.json'))
         queued.append(run.log_artifact(results))
         run.summary.update({'best_dev_loss':best['loss'],'best_epoch':best['epoch'],'final_step':step,'phase':phase})
     except InterruptedError as exc:
-        checkpoint('-interrupted');phase='paused_at_runtime_limit' if not stopped else 'interrupted'
+        checkpoint('-interrupted',cloud=True);phase='paused_at_runtime_limit' if not stopped else 'interrupted'
         write(output/'interruption.json',{'reason':str(exc)})
     except BaseException as exc:
-        checkpoint('-failed');phase='failed';write(output/'failure.json',{'type':type(exc).__name__,'error':str(exc)});raise
+        checkpoint('-failed',cloud=True);phase='failed';write(output/'failure.json',{'type':type(exc).__name__,'error':str(exc),'traceback':traceback.format_exc(),'gpu_allocated_gib':torch.cuda.memory_allocated()/2**30});raise
     finally:
         training_phase=phase
         status('syncing_artifacts',step=step,training_phase=training_phase)
